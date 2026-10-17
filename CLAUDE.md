@@ -30,6 +30,7 @@ Structs, enums, Data Tables, Blueprint Interfaces and interface implementations.
 - **TransferItem(Source, Destination, Item, Amount)** in BPFL_Items is the only way items move: add to destination first, remove from source only on success.
 - **State:** BP_AshfallGameInstance holds cross-level state (inventory, discovery, unlocked regions, per-level saved actors, timestamps). BP_MainGameMode handles the current level. Every saveable actor has a persistent GUID.
 - **Inventory:** positional slots (S_InventorySlot array); emptying a slot leaves it empty in place.
+- **Placeholder icons:** Until real art exists, the UI shows IconText whenever Icon is empty. Once an icon is assigned, it takes over automatically. No struct change needed.
 
 ## Blueprint rules (law)
 

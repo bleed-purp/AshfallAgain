@@ -1,0 +1,27 @@
+﻿Name,DisplayName,Category,Era,Icon,IconText,Description,Clue,IsPlaceable,PlaceClass,StackMax,UseType,BuffID,RobotFuelValue,ToolType,ToolTier
+Wood,"Wood",Resources,Clay,,WOOD,"Rough timber from the Clearing trees.",,False,,50,None,,0,None,0
+Water,"Water",Resources,Clay,,WATR,"Clean water drawn from the source.",,False,,50,Consumable,,0,None,0
+Dirt,"Dirt",Resources,Clay,,DIRT,"Loose earth.",,False,,50,None,,0,None,0
+Stone,"Stone",Resources,Clay,,STON,"A rough chunk of stone.",,False,,50,None,,0,None,0
+Berries,"Berries",Food,Clay,,BERR,"Wild berries.",,False,,50,Consumable,,0,None,0
+Plant,"Plant",Resources,Clay,,PLNT,"A young plant. Place it to grow a sapling.",,True,,50,None,,0,None,0
+Charcoal,"Charcoal",Fuel,Clay,,CHAR,"Burnt wood. Fuel and gate material.",,False,,50,None,,0,None,0
+Ash,"Ash",Materials,Clay,,ASH,"Fine grey ash.",,False,,50,None,,0,None,0
+Dust,"Dust",Materials,Clay,,DUST,"Powdery residue.",,False,,50,None,,0,None,0
+Sand,"Sand",Materials,Clay,,SAND,"Coarse sand.",,False,,50,None,,0,None,0
+Mud,"Mud",Materials,Clay,,MUD,"Wet sticky mud.",,False,,50,None,,0,None,0
+Clay,"Clay",Materials,Clay,,CLAY,"Workable clay.",,False,,50,None,,0,None,0
+ClaySlab,"Clay Slab",Materials,Clay,,SLAB,"A flat slab of clay.",,False,,50,None,,0,None,0
+FiredClayPlate,"Fired Clay Plate",Materials,Clay,,PLAT,"A hard plate of fired clay.",,False,,50,None,,0,None,0
+Moss,"Moss",Materials,Clay,,MOSS,"Soft green moss.",,False,,50,None,,0,None,0
+DriedHerb,"Dried Herb",Materials,Clay,,HERB,"Dried moss herb.",,False,,50,None,,0,None,0
+HerbPowder,"Herb Powder",Materials,Clay,,HPWD,"Ground herb.",,False,,50,None,,0,None,0
+HerbalBrew,"Herbal Brew",Food,Clay,,BREW,"A bitter herbal drink.",,False,,50,Consumable,,0,None,0
+BerryJuice,"Berry Juice",Food,Clay,,JUIC,"Pressed berry juice.",,False,,50,Consumable,,0,None,0
+BerrySyrup,"Berry Syrup",Food,Clay,,SYRP,"Thick sweet syrup.",,False,,50,Consumable,,0,None,0
+Soil,"Soil",Materials,Clay,,SOIL,"Rich planting soil.",,False,,50,None,,0,None,0
+Lye,"Lye",Materials,Clay,,LYE,"Harsh alkaline liquid.",,False,,50,None,,0,None,0
+Ink,"Ink",Materials,Clay,,INK,"Dark ink.",,False,,50,None,,0,None,0
+AshRune,"Ash Rune",StoryItems,Clay,,RUNE,"The first rune. It remembers the fire.",,False,,50,None,,0,None,0
+ClayRobotBody,"Clay Robot Body",Robots,Clay,,BODY,"An inert clay body. It needs an Ash Rune.",,True,,50,None,,0,None,0
+ClayRobot,"Clay Robot",Robots,Clay,,ROBO,"A clay robot with flickering eyes.",,True,,50,None,,0,None,0

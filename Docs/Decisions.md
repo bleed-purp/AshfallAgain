@@ -101,6 +101,12 @@ Settled 2026-10-15 in a 50-question session. **Where this file and GDD_v4.md dis
 | 49 | First playable goal | Full Era 1 in the Clearing: gathering, all Era 1 recipes, Recipe Book, Clay Robot working, first Echo key opens the Reed Marsh gate. |
 | 50 | Pace | A few evenings a week, one milestone per session (1–2 hours). |
 
+## Placeholder art
+
+| # | Topic | Decision |
+| --- | --- | --- |
+| 51 | Item icons | Until real art exists, the UI shows IconText whenever Icon is empty. Once an icon is assigned, it takes over automatically. No struct change needed. |
+
 ## Still Open
 
 - Why the player went back, and how and why they forgot.
