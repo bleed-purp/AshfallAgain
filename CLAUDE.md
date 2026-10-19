@@ -30,7 +30,6 @@ Structs, enums, Data Tables, Blueprint Interfaces and interface implementations.
 - **TransferItem(Source, Destination, Item, Amount)** in BPFL_Items is the only way items move: add to destination first, remove from source only on success.
 - **State:** BP_AshfallGameInstance holds cross-level state (inventory, discovery, unlocked regions, per-level saved actors, timestamps). BP_MainGameMode handles the current level. Every saveable actor has a persistent GUID.
 - **Inventory:** positional slots (S_InventorySlot array); emptying a slot leaves it empty in place.
-- **Placeholder icons:** Until real art exists, the UI shows IconText whenever Icon is empty. Once an icon is assigned, it takes over automatically. No struct change needed.
 
 ## Blueprint rules (law)
 
@@ -52,6 +51,14 @@ Structs, enums, Data Tables, Blueprint Interfaces and interface implementations.
 `Content/Ashfall/` → `Core/` (GameMode, GameInstance, SaveGame, BPFL), `Player/`, `Items/`, `Machines/`, `Robots/`, `World/` (nodes, gates, waystones), `Echoes/`, `UI/`, `Data/` (DTs, structs `S_`, enums `E_`), `Interfaces/`, `Maps/` (one level per region), `Art/`.
 Prefixes: BP_, WBP_, BPI_, BPFL_, BPC_ (components), S_, E_, DT_, M_/MI_, SM_/SK_, L_ (levels).
 Debug prints start with `[DIAG]` so they're easy to find and remove.
+
+## Art assets (keep the project small)
+- Third-party packs are never added directly to this project. Cris imports them into a separate vault project, then uses Migrate to bring over only the assets needed.
+- Imported art lives in `Content/Ashfall/Art/<PackName>/<Category>/` (example: `Art/Synty/Nature/SM_Tree04`). Materials and textures shared by a pack go in `Art/<PackName>/Shared/`; never keep two copies.
+- Never move or rename assets outside the editor. After moving, run Fix Up Redirectors on the old folder and delete it if empty.
+- Do not import or request whole packs. Check Size Map before migrating anything with large textures.
+- Each new asset gets its own commit ("Add Synty tree and shared nature material"). Update the status of the item in the asset checklist when an asset is sourced.
+- Until real art exists, items use `IconText` placeholders; do not block milestones on art.
 
 ## Cost habits
 

@@ -100,12 +100,8 @@ Settled 2026-10-15 in a 50-question session. **Where this file and GDD_v4.md dis
 | 48 | Save system | Built early, right after inventory. |
 | 49 | First playable goal | Full Era 1 in the Clearing: gathering, all Era 1 recipes, Recipe Book, Clay Robot working, first Echo key opens the Reed Marsh gate. |
 | 50 | Pace | A few evenings a week, one milestone per session (1–2 hours). |
-
-## Placeholder art
-
-| # | Topic | Decision |
-| --- | --- | --- |
-| 51 | Item icons | Until real art exists, the UI shows IconText whenever Icon is empty. Once an icon is assigned, it takes over automatically. No struct change needed. |
+| 51 | Art import workflow | Packs go into a separate vault project; only needed assets are migrated into `Content/Ashfall/Art/<PackName>/<Category>/`, shared materials in `Shared/`. Asset checklist (published page) tracks status of every icon and 3D asset. |
+| 52 | First asset sourced | Wood node: Synty `SM_Tree04` with shared `M_Nature_Lite_Material` and `T_Nature_Lite_Colormap` (about 84 KiB total). |
 
 ## Still Open
 
