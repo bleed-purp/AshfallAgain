@@ -4,7 +4,7 @@ Update this file at the end of every session. Keep it under one page.
 
 **Current milestone:** M3 · Interaction — complete. Next: M4 · Inventory core
 **Last session:** 2026-10-20
-**Last commit:** see git log (M3 commit pending Cris)
+**Last commit:** c12f91e M3: interaction (trace, outline, prompt, E)
 
 ## State
 - M0, M1, M2 done (see git log). M3 done: all three "Done when" checks pass in PIE (outline + prompt on aim, E triggers, nothing past 250).
@@ -22,7 +22,7 @@ Update this file at the end of every session. Keep it under one page.
 - Test level is still the template `Lvl_FirstPerson`.
 
 ## By-hand steps waiting for Cris
-- Save everything, then commit M3.
+- None.
 
 ## Not built (deferred)
 - Slot keys 1–0, Ctrl row switch, Tab/Esc: add when their consumers exist (M5 hotbar, UI milestones).
