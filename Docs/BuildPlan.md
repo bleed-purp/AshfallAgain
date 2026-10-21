@@ -38,7 +38,7 @@ One milestone per session (1–2 hours). Each milestone ends with every **Done w
 - **Done when:** adding fills the same-item slot first, then the first empty slot; overflow is refused with no loss; emptying a slot leaves a gap; TransferItem never removes from the source when the destination refuses.
 
 ### M5 · Hotbar UI and drag-and-drop
-- **Build:** WBP_Hotbar (icons, counts, selected highlight, placeable border), held item shown in hand, drag-and-drop between hotbar slots (swap and merge stacks). Supports 5/10/20 slots and two rows.
+- **Build:** WBP_Hotbar (icons, counts, selected highlight, placeable border), drag-and-drop between hotbar slots (swap and merge stacks). Supports 5/10/20 slots and two rows.
 - **Done when:** number keys select; dragging swaps or merges correctly; counts never change during a drag.
 
 ### M6 · Gathering
@@ -62,7 +62,7 @@ One milestone per session (1–2 hours). Each milestone ends with every **Done w
 - **Done when:** every Era 1 recipe can be crafted from gathered items; the list refreshes on every slot change (rule 6).
 
 ### M10 · Placement and chests
-- **Build:** BP_PlaceableBase, ghost preview (valid green / invalid red, snap to ground, overlap check), right-click to place, pick up when empty. BP_ContainerBase + BP_Chest (unlimited list) with a drag-drop chest menu.
+- **Build:** BP_PlaceableBase, ghost preview (valid green / invalid red, snap to ground, overlap check), right-click to place, pick up when empty. Placeable items appear in the world only as this placement ghost; there is no held model (Decision 53). BP_ContainerBase + BP_Chest (unlimited list) with a drag-drop chest menu.
 - **Done when:** a chest can be placed, filled, emptied and picked up; it cannot be picked up while holding items; placement refuses overlapping spots.
 
 ### M11 · Discovery and the Recipe Book

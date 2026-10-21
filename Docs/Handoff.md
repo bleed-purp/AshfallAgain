@@ -2,12 +2,23 @@
 
 Update this file at the end of every session. Keep it under one page.
 
-**Current milestone:** M3 · Interaction — complete. Next: M4 · Inventory core
-**Last session:** 2026-10-20
-**Last commit:** c12f91e M3: interaction (trace, outline, prompt, E)
+**Current milestone:** M5 · Hotbar UI and drag-and-drop — complete. Next: M6 · Gathering
+**Last session:** 2026-10-21
+**Last commit:** M4 commit (see git log); M5 not yet committed
+
+## M5 state (done, all "Done when" checks pass in PIE)
+- **Decision 53: no held items.** Items show only as UI icons; placeables appear only as the M10 placement ghost. The held-item display (BPC_HeldItem, SetHeldItem, UpdateHeld/BindHeld/InitHeld, inventory GetSelectedItem) was built and then removed; nothing references it. If M10 needs the selected item, re-add a `GetSelectedItem` on `BPC_Inventory`.
+- `BPC_Inventory`: `SelectedIndex`, `ActiveRow`, dispatchers `OnSlotsChanged` / `OnSelectionChanged` (add/remove/move fire `OnSlotsChanged`), `SelectSlot(Index)`, `SwitchRow` (only above 10 slots), `MoveSlot(From, To)` (swap or merge to stack max; no-op for empty source, same slot, out-of-range or full destination).
+- Input: `IA_Slot1`–`IA_Slot10` (keys 1–0), `IA_SwitchRow` (Left Ctrl), `IA_ToggleCursor` (Tab: show cursor, freeze look; GameAndUI input mode). All in `IMC_Ashfall`.
+- UI: `WBP_HotbarSlot` (90x90 square: `iconText`, count if above 1, key number, amber selection frame, green placeable border; owns drag start `OnMouseButtonDown`/`OnDragDetected` and `OnDrop`, which calls `MoveSlot`), `WBP_Hotbar` (`Setup(Inventory)`, `Build`, `Refresh`; two rows, row 2 only above 10 slots), `BP_HotbarDragOp` (source index/widget). Character: `InitHotbar`, `SelectHotbarSlot`, `SwitchHotbarRow`, `ToggleCursor`.
+- All `[DIAG]` test code removed (numpad keys, debug functions, selection prints). No way to add items for testing now; M6 gathering supplies it, or add a temporary numpad key. Placeable test items in DT_Items: `Plant`, `ClayRobotBody`, `ClayRobot`.
+- Not tested in PIE: 10- and 20-slot layouts and the Ctrl row switch at 20 slots (logic is in place; test when the hotbar upgrade exists in M17).
+- `WBP_HotbarSlot` sizes via a SizeBox: its "override" switches (`bOverride_WidthOverride` / `bOverride_HeightOverride`) must be on or the size is ignored.
 
 ## State
-- M0, M1, M2 done (see git log). M3 done: all three "Done when" checks pass in PIE (outline + prompt on aim, E triggers, nothing past 250).
+- M0–M3 done (see git log). M4 done: all "Done when" checks pass in PIE (same-item slot fills first, overflow refused with no loss, emptied slot leaves a gap, TransferItem leaves source untouched on refusal). Debug code removed.
+- `Player/BPC_Inventory` (component, on `BP_AshfallCharacter` as `Inventory`): `Slots` (S_InventorySlot array: `itemId` Name, `amount` Integer; empty = `None`/0), `SlotCount` 5, `ItemsTable` = DT_Items. BeginPlay resizes Slots. Implements BPI_ItemContainer: all four functions return only Success/count/bool (no Remaining). Add is all-or-nothing (partial fit is refused). Unknown item or Amount <= 0 is refused. `GetStackMax(ItemID)` reads `stackMax` per item from DT_Items (0 if missing).
+- `Core/BPFL_Items.TransferItem(Source, Destination, ItemID, Amount) → Success`: Source/Destination are Object refs called through interface messages; checks source count, adds to destination, removes from source only after the add succeeds.
 - `Player/BP_AshfallCharacter` (Character): `FirstPersonCamera` at Z 64; `WalkSpeed` 400, `JumpVelocity` 450, `LookSensitivity` 1.0; functions `ApplyMove`, `ApplyLook`.
 - M3 interaction on the character: `InteractReach` 250 (variable, no settings table yet), `CurrentTarget`, `UpdateTarget` (0.05s looping timer from BeginPlay; only BPI_Interactable actors become target), `SetOutline(Actor,bool)` (Render CustomDepth + Stencil 1 on all primitive components), `TryInteract` (calls BPI_Interactable.Interact with self as Interactor), `InitPrompt` + `PromptWidget`.
 - Input in `Player/Input/`: `IA_Move`, `IA_Look`, `IA_Jump`, `IA_Interact` (E, Started), `IMC_Ashfall`.
@@ -25,13 +36,16 @@ Update this file at the end of every session. Keep it under one page.
 - None.
 
 ## Not built (deferred)
-- Slot keys 1–0, Ctrl row switch, Tab/Esc: add when their consumers exist (M5 hotbar, UI milestones).
+- Esc (close menus): add when menus exist. Tab currently only toggles the cursor for hotbar dragging; revisit when menus open.
 - Reach is a character variable, not data; move to a settings table if one is added.
 
 ## Next session starts with
-- M4: BPC_Inventory component (positional slots, start 5, StackMax 50), implements BPI_ItemContainer, BPFL_Items.TransferItem, debug key. Confirm "Done when" with Cris first. Components implementing the interface and the BPFL are by-hand steps where the MCP can't.
+- M6 · Gathering (confirm "Done when" with Cris first). Gathered items go in through `BPI_ItemContainer.TryAddItem` on `BP_AshfallCharacter.Inventory`; a refusal (full hotbar) must show a message and lose nothing. Use numpad keys for any test items (F1–F12 clash with editor view-mode shortcuts; the number row is for the hotbar).
 
 ## Decisions made during the build
+- Inventory empty-slot convention is `itemId = None`, `amount = 0`. Interface inputs are `ItemID`/`Amount`; struct fields are lowercase `itemId`/`amount`.
+- A destination-full TransferItem refusal was not tested in PIE (the numpad test only covered the source-lacks-item refusal); logic is add-then-remove so a refused add never touches the source.
+- MCP cannot create Blueprint Function Libraries; BPFL_Items was created by hand.
 - Item and recipe references are `Name` fields holding DT_Items row names (not Data Table Row Handles); CSV check enforces them.
 - Recipe row names are `Machine_InputA[_InputB]`. Robot assembly uses `E_MachineID.RobotAssembly`.
 - Not yet in data: RobotFuelValue (all 0), BuffID (blank), Clue (blank), robot hungry-speed field, robot stats and barters rows.

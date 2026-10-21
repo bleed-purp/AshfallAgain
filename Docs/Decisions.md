@@ -102,9 +102,11 @@ Settled 2026-10-15 in a 50-question session. **Where this file and GDD_v4.md dis
 | 50 | Pace | A few evenings a week, one milestone per session (1–2 hours). |
 | 51 | Art import workflow | Packs go into a separate vault project; only needed assets are migrated into `Content/Ashfall/Art/<PackName>/<Category>/`, shared materials in `Shared/`. Asset checklist (published page) tracks status of every icon and 3D asset. |
 | 52 | First asset sourced | Wood node: Synty `SM_Tree04` with shared `M_Nature_Lite_Material` and `T_Nature_Lite_Colormap` (about 84 KiB total). |
+| 53 | No held items | Items are never shown in the player's hand; only icons in UI. Placeable items appear in the world only as the placement ghost. Overrides the GDD line about the selected item shown in hand. |
 
 ## Still Open
 
+- Whether tools (pick, axe) are visible when used. To be decided later.
 - Why the player went back, and how and why they forgot.
 - The final items and the Omega Robot's words.
 - Exact key or clearing item for each region gate.
