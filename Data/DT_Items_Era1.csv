@@ -25,3 +25,4 @@ Ink,"Ink",Materials,Clay,,INK,"Dark ink.",,False,,50,None,,0,None,0
 AshRune,"Ash Rune",StoryItems,Clay,,RUNE,"The first rune. It remembers the fire.",,False,,50,None,,0,None,0
 ClayRobotBody,"Clay Robot Body",Robots,Clay,,BODY,"An inert clay body. It needs an Ash Rune.",,True,,50,None,,0,None,0
 ClayRobot,"Clay Robot",Robots,Clay,,ROBO,"A clay robot with flickering eyes.",,True,,50,None,,0,None,0
+StonePick,"Stone Pick",Tools,Clay,,PICK,"A rough pick for breaking stone.",,False,,1,None,,0,Pick,1

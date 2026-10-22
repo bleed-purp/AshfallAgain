@@ -2,53 +2,61 @@
 
 Update this file at the end of every session. Keep it under one page.
 
-**Current milestone:** M5 · Hotbar UI and drag-and-drop — complete. Next: M6 · Gathering
+**Current milestone:** M7 · Save and load foundation — complete. Next: M8 · Machine base and the Campfire
 **Last session:** 2026-10-21
-**Last commit:** M4 commit (see git log); M5 not yet committed
+**Last commit:** M5 commit f66ead7; M6 and M7 not yet committed
 
-## M5 state (done, all "Done when" checks pass in PIE)
-- **Decision 53: no held items.** Items show only as UI icons; placeables appear only as the M10 placement ghost. The held-item display (BPC_HeldItem, SetHeldItem, UpdateHeld/BindHeld/InitHeld, inventory GetSelectedItem) was built and then removed; nothing references it. If M10 needs the selected item, re-add a `GetSelectedItem` on `BPC_Inventory`.
-- `BPC_Inventory`: `SelectedIndex`, `ActiveRow`, dispatchers `OnSlotsChanged` / `OnSelectionChanged` (add/remove/move fire `OnSlotsChanged`), `SelectSlot(Index)`, `SwitchRow` (only above 10 slots), `MoveSlot(From, To)` (swap or merge to stack max; no-op for empty source, same slot, out-of-range or full destination).
-- Input: `IA_Slot1`–`IA_Slot10` (keys 1–0), `IA_SwitchRow` (Left Ctrl), `IA_ToggleCursor` (Tab: show cursor, freeze look; GameAndUI input mode). All in `IMC_Ashfall`.
-- UI: `WBP_HotbarSlot` (90x90 square: `iconText`, count if above 1, key number, amber selection frame, green placeable border; owns drag start `OnMouseButtonDown`/`OnDragDetected` and `OnDrop`, which calls `MoveSlot`), `WBP_Hotbar` (`Setup(Inventory)`, `Build`, `Refresh`; two rows, row 2 only above 10 slots), `BP_HotbarDragOp` (source index/widget). Character: `InitHotbar`, `SelectHotbarSlot`, `SwitchHotbarRow`, `ToggleCursor`.
-- All `[DIAG]` test code removed (numpad keys, debug functions, selection prints). No way to add items for testing now; M6 gathering supplies it, or add a temporary numpad key. Placeable test items in DT_Items: `Plant`, `ClayRobotBody`, `ClayRobot`.
-- Not tested in PIE: 10- and 20-slot layouts and the Ctrl row switch at 20 slots (logic is in place; test when the hotbar upgrade exists in M17).
-- `WBP_HotbarSlot` sizes via a SizeBox: its "override" switches (`bOverride_WidthOverride` / `bOverride_HeightOverride`) must be on or the size is ignored.
+## M7 state (done, all "Done when" checks pass in PIE)
+- **Save slot `AshfallSave`** (one file, `Saved/SaveGames/AshfallSave.sav`). `Core/BP_AshfallSave` (SaveGame): `InventorySlots`, `DiscoveredItems`, `UnlockedRegions`, `ActorRecords` (S_SavedActor array), `SavedAt`.
+- **`BP_AshfallGameInstance`:** mirror variables of the same data; `SaveToDisk`, `LoadFromDisk` (called from Event Init), `StoreRecord(Record)` (replace by guid+level, else add), `FindRecord(Guid, LevelName) → Found, Record`. Event Shutdown calls `SaveToDisk` and is the final write on quit. Requires Project Settings Game Instance Class = BP_AshfallGameInstance (confirmed working).
+- **`Core/BPC_Saveable`** (ActorComponent, add to any saveable actor): `SaveGuid` (Guid, instance editable), `LevelKeyCached`, `GetLevelKey`, `GetRecord`, `ApplyRecord` (teleport owner, zero physics velocity). BeginPlay caches the level key, registers with `BP_MainGameMode.RegisterSaveable`, looks up its record and applies it. **EndPlay stores the record in the GameInstance** (owner still exists then). Without a valid guid it prints one warning and does nothing.
+- **GUID creation:** the owner's construction script sets `Saveable.SaveGuid` to `NewGuid` only when it is invalid; it persists once the level is saved (verified). See `World/BP_SaveTestActor`.
+- **`BP_MainGameMode`:** `SaveableComponents`, `RegisterSaveable` (AddUnique), `CollectAndSave` (stores every registered record, then saves), called from EndPlay. Intended for level exits.
+- **Inventory:** `BP_AshfallCharacter.RestoreInventory` (end of BeginPlay chain, after `InitGather`) copies saved slots into `Inventory.Slots` (up to `SlotCount`) and fires `OnSlotsChanged`. `PushInventoryToGameInstance` (called from the character's EndPlay) copies slots into the GameInstance and saves.
+- **`World/BP_SaveTestActor`:** physics cube with `BPC_Saveable`, used for the Done-when check; delete or keep as a test prop.
+- Hotbar text made smaller: `WBP_HotbarSlot` item label 18, count 14, key 15.
+- All M7 `[DIAG]` prints removed.
 
-## State
-- M0–M3 done (see git log). M4 done: all "Done when" checks pass in PIE (same-item slot fills first, overflow refused with no loss, emptied slot leaves a gap, TransferItem leaves source untouched on refusal). Debug code removed.
-- `Player/BPC_Inventory` (component, on `BP_AshfallCharacter` as `Inventory`): `Slots` (S_InventorySlot array: `itemId` Name, `amount` Integer; empty = `None`/0), `SlotCount` 5, `ItemsTable` = DT_Items. BeginPlay resizes Slots. Implements BPI_ItemContainer: all four functions return only Success/count/bool (no Remaining). Add is all-or-nothing (partial fit is refused). Unknown item or Amount <= 0 is refused. `GetStackMax(ItemID)` reads `stackMax` per item from DT_Items (0 if missing).
-- `Core/BPFL_Items.TransferItem(Source, Destination, ItemID, Amount) → Success`: Source/Destination are Object refs called through interface messages; checks source count, adds to destination, removes from source only after the add succeeds.
-- `Player/BP_AshfallCharacter` (Character): `FirstPersonCamera` at Z 64; `WalkSpeed` 400, `JumpVelocity` 450, `LookSensitivity` 1.0; functions `ApplyMove`, `ApplyLook`.
-- M3 interaction on the character: `InteractReach` 250 (variable, no settings table yet), `CurrentTarget`, `UpdateTarget` (0.05s looping timer from BeginPlay; only BPI_Interactable actors become target), `SetOutline(Actor,bool)` (Render CustomDepth + Stencil 1 on all primitive components), `TryInteract` (calls BPI_Interactable.Interact with self as Interactor), `InitPrompt` + `PromptWidget`.
-- Input in `Player/Input/`: `IA_Move`, `IA_Look`, `IA_Jump`, `IA_Interact` (E, Started), `IMC_Ashfall`.
-- `Art/Materials/M_PP_Outline`: post process, CustomStencil==1 edge, params `OutlineColor` (amber), `Thickness` 2; set as a blendable on the camera component (not in BeginPlay).
-- `UI/WBP_InteractPrompt`: centre `+` and `PromptLabel` ("[E]  <prompt>"), `SetPrompt(Text,bool)`.
-- `World/BP_Interactable`: test cube implementing BPI_Interactable; Interact prints the interactor name; prompt "Test Cube". Delete or replace when real interactables exist.
-- `Core/BP_MainGameMode` (Default Pawn = BP_AshfallCharacter) and `Core/BP_AshfallGameInstance` (empty); project default GameMode. `Lvl_FirstPerson` has no World Settings override.
+## Traps found this session
+- `Game|GetCurrentLevelName` returns an empty string once the world is tearing down: cache the level key at BeginPlay (done in `BPC_Saveable`).
+- Impure nodes nested inside `(return ...)` in the DSL are not exec-wired and never run. Bind them as their own statement first.
+- GameMode EndPlay fires too late to read owner actors reliably; use component EndPlay.
+- New BP functions are not visible to other graphs (find_node_types) until the asset is saved; call them after a save, or put the caller in the same Blueprint.
+- Known gap: on a real level change the last write may happen before the character's EndPlay pushes the inventory. Re-check when the first level transition exists (M12+ regions): call push-then-save explicitly from the transition code.
+- Records are kept even for actors destroyed at runtime (their last transform stays saved). Spawned-at-runtime actors do not respawn yet; `actorClass` is saved for that.
+
+## M6 state (done)
+- Gathering: `IA_Gather` (LMB) → `StartGather` / `GatherTick` / `StopGather` / `CanGather` on the character; `World/BP_ResourceNodeBase` (`ItemID`, `Amount`, `GatherTime`, `RequiredToolType` E_ToolType, `MinTier`, `PromptText`), nodes Dirt, Water (well mesh), Wood, Berries, Stone (needs Pick). Tool check reads the selected hotbar slot via `BPC_Inventory.GetSelectedItemID`. Full hotbar shows "Hotbar full". `UI/WBP_GatherRing` (ring, message). `BPC_Inventory` unchanged otherwise.
+- E opens menus only; `WBP_InteractPrompt.SetPrompt` shows the text as given (each interactable carries its own key hint).
+- `Art/Placeholders/M_Placeholder` + `BP_PlaceholderCube` for anything without a real mesh; Dirt/Water use `UsePlaceholder` to switch to a real mesh.
+- `StonePick` row in DT_Items. No way to obtain a pick until recipes exist (M9).
+
+## State from earlier milestones
+- M0–M5 done (see git log). `BPC_Inventory` (component `Inventory`): `Slots` (S_InventorySlot: `itemId`, `amount`; empty = `None`/0), `SlotCount` 5, `ItemsTable` = DT_Items, `SelectedIndex`, `ActiveRow`, dispatchers, `SelectSlot`, `SwitchRow`, `MoveSlot`, `GetStackMax`, `GetSelectedItemID`. Add is all-or-nothing. Implements BPI_ItemContainer.
+- `BPFL_Items.TransferItem(Source, Destination, ItemID, Amount)`: add first, remove only on success.
+- Decision 53: no held items; items are UI icons only.
+- Input in `Player/Input/`: Move, Look, Jump, Interact (E), Gather (LMB), Slot1–10, SwitchRow (Ctrl), ToggleCursor (Tab), `IMC_Ashfall`.
+- M3 interaction: `InteractReach` 250, `CurrentTarget`, `UpdateTarget` (0.05 s timer), `SetOutline` (Custom Stencil 1), `TryInteract`, `WBP_InteractPrompt`.
+- `Core/BP_MainGameMode` (Default Pawn = BP_AshfallCharacter). Test level is still the template `Lvl_FirstPerson`.
 
 ## Known issues / bugs
-- Template input actions still exist in `/Game/Input/Actions` with the same names as ours. The MCP cannot tell them apart: new Enhanced Input events created through it bind to the TEMPLATE action. Add Move/Look/Jump-style events by hand and pick the `Ashfall/Player/Input` one. (New unique names like `IA_Interact` work fine.)
-- `GetInteractPrompt` returns one Text; no separate name/action.
-- Test level is still the template `Lvl_FirstPerson`.
+- Template input actions still exist in `/Game/Input/Actions` with the same names as ours; MCP-created events with those names bind to the TEMPLATE action. Add such events by hand. (Unique names like `IA_Gather` are fine.)
+- MCP graph read-back is lossy (dropped default args, wrong labels); trust pin checks, not the printed DSL. Calls with duplicate type ids (e.g. SetScalar/VectorParameterValue on MID vs collection) need `create_node` with `declaring_class`.
+- MCP cannot create enum-typed variables, Data Tables, structs, interfaces or BPFLs: do these by hand.
+- Nodes never deplete or respawn (rules still open in Decisions). `GetInteractPrompt` returns one Text.
+- Not tested: 10/20-slot hotbar layouts and Ctrl row switch (M17).
 
-## By-hand steps waiting for Cris
-- None.
-
-## Not built (deferred)
-- Esc (close menus): add when menus exist. Tab currently only toggles the cursor for hotbar dragging; revisit when menus open.
-- Reach is a character variable, not data; move to a settings table if one is added.
+## By hand steps waiting for Cris
+- Save All, then commit M6 and M7 (suggest two commits). The Fantastic Village art (`Art/FantasticVillage/SM_PROP_well`, `Art/Materials/MI_*`, `M_Master_opaque*`) is used by the Water node and should get its own asset commit first; leave `Content/Fantastic_Village_Pack/` out.
 
 ## Next session starts with
-- M6 · Gathering (confirm "Done when" with Cris first). Gathered items go in through `BPI_ItemContainer.TryAddItem` on `BP_AshfallCharacter.Inventory`; a refusal (full hotbar) must show a message and lose nothing. Use numpad keys for any test items (F1–F12 clash with editor view-mode shortcuts; the number row is for the hotbar).
+- M8 · Machine base and the Campfire (confirm "Done when" with Cris first). Interactables that open menus use E and put "[E]  ..." in their prompt text. Machines that must persist add `BPC_Saveable` (guid generated in the owner's construction script) and store contents in the record's `contents` field.
 
 ## Decisions made during the build
 - Inventory empty-slot convention is `itemId = None`, `amount = 0`. Interface inputs are `ItemID`/`Amount`; struct fields are lowercase `itemId`/`amount`.
-- A destination-full TransferItem refusal was not tested in PIE (the numpad test only covered the source-lacks-item refusal); logic is add-then-remove so a refused add never touches the source.
-- MCP cannot create Blueprint Function Libraries; BPFL_Items was created by hand.
-- Item and recipe references are `Name` fields holding DT_Items row names (not Data Table Row Handles); CSV check enforces them.
-- Recipe row names are `Machine_InputA[_InputB]`. Robot assembly uses `E_MachineID.RobotAssembly`.
+- Item and recipe references are `Name` fields holding DT_Items row names. Recipe row names are `Machine_InputA[_InputB]`. Robot assembly uses `E_MachineID.RobotAssembly`.
 - Not yet in data: RobotFuelValue (all 0), BuffID (blank), Clue (blank), robot hungry-speed field, robot stats and barters rows.
-- Hotbar-upgrade Echo trades will use a pouch item as the reward; wire up when building Echoes.
-- Player is a plain Character BP built via MCP (no template character). Jump velocity tuned to 450 by feel.
+- Hotbar-upgrade Echo trades will use a pouch item as the reward.
+- Saving: one slot, flat `ActorRecords` array keyed by guid + level name (no nested maps); saveable actors carry `BPC_Saveable` instead of a new interface or parent class.
 - Outline = post-process on Custom Stencil (not depth), amber, 2px; `r.CustomDepth=3` in DefaultEngine.ini.
+- Gathering is left mouse hold with a progress ring; E opens menus only.
